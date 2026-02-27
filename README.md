@@ -67,6 +67,15 @@ node bin/cli.js list-records \
   --page-size 50
 ```
 
+按条件过滤（推荐使用飞书公式字符串）：
+```bash
+node bin/cli.js list-records \
+  --app-token basxxxxxx \
+  --table-id tblxxxxxx \
+  --filter 'CurrentValue.[id]="13041"' \
+  --page-size 1
+```
+
 ### 更新记录
 ```bash
 node bin/cli.js update-record \

@@ -117,7 +117,7 @@ program
   .requiredOption('--table-id <id>', '表ID')
   .option('--page-size <number>', '每页大小', '100')
   .option('--page-token <token>', '分页token')
-  .option('--filter <json>', '过滤条件JSON')
+  .option('--filter <expr>', '过滤条件（飞书公式字符串，或兼容JSON条件对象）')
   .option('--sort <json>', '排序条件JSON')
   .action(async (options) => {
     try {

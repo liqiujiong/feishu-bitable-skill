@@ -106,10 +106,14 @@ node bitable-cli.js create-record \
 node bitable-cli.js list-records \
   --app-token basxxxxxx \
   --table-id tblxxxxxx \
-  --filter '{"conjunction": "and", "conditions": [{"field_name": "状态", "operator": "is", "value": ["进行中"]}]}' \
+  --filter 'CurrentValue.[状态]="进行中"' \
   --sort '["-创建时间"]' \
   --page-size 50
 ```
+
+说明：
+- `--filter` 推荐使用飞书公式字符串（如 `CurrentValue.[id]="13041"`）。示例值："AND(CurrentValue.[身高]>180, CurrentValue.[体重]>150)"
+- 也兼容旧的 JSON 条件对象（例如 `{"conjunction":"and","conditions":[...]}`），CLI 会自动转换为公式后再调用 API。
 
 ### 4. 批量操作
 ```bash

@@ -190,11 +190,132 @@ class FeishuBitableAPI {
     validateRequired({ appToken, tableId }, ['appToken', 'tableId']);
     
     try {
-      const response = await this.client.get(`/apps/${appToken}/tables/${tableId}/records`, { params });
+      const normalizedParams = this.normalizeRecordListParams(params);
+      const response = await this.client.get(
+        `/apps/${appToken}/tables/${tableId}/records`,
+        {
+          params: normalizedParams,
+          paramsSerializer: (queryParams) => {
+            const searchParams = new URLSearchParams();
+            for (const [key, value] of Object.entries(queryParams || {})) {
+              if (value === undefined || value === null) continue;
+              searchParams.append(key, typeof value === 'object' ? JSON.stringify(value) : String(value));
+            }
+            return searchParams.toString();
+          }
+        }
+      );
       return response.data;
     } catch (error) {
       throw this.handleError(error, '获取记录列表');
     }
+  }
+
+  /**
+   * 规范化记录列表参数
+   * 飞书 records/list 的 filter 需要公式字符串，不能直接传对象。
+   */
+  normalizeRecordListParams(params = {}) {
+    const normalized = { ...params };
+
+    if (normalized.filter && typeof normalized.filter === 'object') {
+      normalized.filter = this.convertJsonFilterToFormula(normalized.filter);
+    }
+
+    if (normalized.sort && typeof normalized.sort === 'object') {
+      normalized.sort = JSON.stringify(normalized.sort);
+    }
+
+    if (normalized.field_names && typeof normalized.field_names === 'object') {
+      normalized.field_names = JSON.stringify(normalized.field_names);
+    }
+
+    return normalized;
+  }
+
+  /**
+   * 兼容旧的 JSON filter 结构并转换成飞书公式表达式
+   * 例：{"conjunction":"and","conditions":[{"field_name":"id","operator":"is","value":["13041"]}]}
+   * => (CurrentValue.[id]="13041")
+   */
+  convertJsonFilterToFormula(filter) {
+    if (!filter || typeof filter !== 'object') {
+      throw new Error('filter 格式无效：必须是对象');
+    }
+
+    const buildExpression = (node) => {
+      if (node && Array.isArray(node.conditions)) {
+        const conjunction = String(node.conjunction || 'and').toUpperCase();
+        const operator = conjunction === 'OR' ? 'OR' : 'AND';
+        const items = node.conditions
+          .map(condition => buildExpression(condition))
+          .filter(Boolean);
+
+        if (items.length === 0) {
+          throw new Error('filter 条件为空');
+        }
+        if (items.length === 1) {
+          return items[0];
+        }
+
+        return `${operator}(${items.join(',')})`;
+      }
+
+      const fieldName = node.field_name || node.field || node.field_id;
+      const rawOperator = String(node.operator || '').toLowerCase();
+      const rawValue = node.value;
+      const values = Array.isArray(rawValue) ? rawValue : (rawValue === undefined ? [] : [rawValue]);
+
+      if (!fieldName || !rawOperator) {
+        throw new Error('filter 叶子条件缺少 field_name 或 operator');
+      }
+
+      const fieldRef = `CurrentValue.[${fieldName}]`;
+      const valueToFormula = (value) => {
+        if (typeof value === 'number' || typeof value === 'boolean') {
+          return String(value);
+        }
+        const escaped = String(value).replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+        return `"${escaped}"`;
+      };
+
+      if (rawOperator === 'is' || rawOperator === 'equals') {
+        if (values.length <= 1) {
+          return `${fieldRef}=${valueToFormula(values[0])}`;
+        }
+        return `OR(${values.map(v => `${fieldRef}=${valueToFormula(v)}`).join(',')})`;
+      }
+
+      if (rawOperator === 'is_not' || rawOperator === 'not_equals') {
+        if (values.length <= 1) {
+          return `${fieldRef}!=${valueToFormula(values[0])}`;
+        }
+        return `AND(${values.map(v => `${fieldRef}!=${valueToFormula(v)}`).join(',')})`;
+      }
+
+      if (rawOperator === 'gt' || rawOperator === 'greater') {
+        return `${fieldRef}>${valueToFormula(values[0])}`;
+      }
+      if (rawOperator === 'gte' || rawOperator === 'greater_equal') {
+        return `${fieldRef}>=${valueToFormula(values[0])}`;
+      }
+      if (rawOperator === 'lt' || rawOperator === 'less') {
+        return `${fieldRef}<${valueToFormula(values[0])}`;
+      }
+      if (rawOperator === 'lte' || rawOperator === 'less_equal') {
+        return `${fieldRef}<=${valueToFormula(values[0])}`;
+      }
+      if (rawOperator === 'is_empty' || rawOperator === 'empty') {
+        return `${fieldRef}=""`;
+      }
+      if (rawOperator === 'is_not_empty' || rawOperator === 'not_empty') {
+        return `${fieldRef}!=""`;
+      }
+
+      throw new Error(`不支持的 filter operator: ${rawOperator}。请直接传飞书公式字符串，例如 CurrentValue.[id]=\"13041\"`);
+    };
+
+    return buildExpression(filter);
   }
   
   /**
