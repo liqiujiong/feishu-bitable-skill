@@ -34,9 +34,9 @@
 ### 文档和示例
 - [x] SKILL.md (Clawdbot技能文档)
 - [x] README.md (使用说明)
-- [x] description.md (发布描述)
+- [x] docs/release/description.md (发布描述)
 - [x] 示例文件 (examples/)
-- [x] .env.example (环境变量模板)
+- [ ] .env.example (环境变量模板，可选补充)
 - [x] 测试脚本 (test-simple.js)
 
 ### 配置和依赖
@@ -104,9 +104,13 @@ feishu-bitable/
 ├── bin/                   # 命令行工具
 │   └── cli.js             # CLI接口
 ├── examples/              # 示例文件
+├── references/            # 参数与补充参考
+│   └── cli-params.md      # CLI参数细则
+├── docs/release/          # 发布资料
+│   ├── CHECKLIST.md
+│   └── description.md
 ├── SKILL.md              # 技能文档
 ├── README.md             # 使用说明
-├── description.md        # 发布描述
 ├── package.json          # 依赖配置
 └── test-simple.js        # 测试脚本
 ```
