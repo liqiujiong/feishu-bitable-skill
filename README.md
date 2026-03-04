@@ -10,7 +10,6 @@
 **方式一：对话一键安装（推荐）**
 直接复制本仓库的链接，粘贴到你与 OpenClaw 的聊天窗口中，并发送指令：
 > "请帮我安装这个技能：https://github.com/liqiujiong/feishu-bitable-skill"
-OpenClaw 会在后台自动读取该仓库并完成部署。
 
 **方式二：本地命令行安装**
 如果你在本地终端运行 OpenClaw，可以通过以下命令将此技能直接克隆到你的技能工作区：
