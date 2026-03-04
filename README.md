@@ -160,7 +160,7 @@ feishu-bitable/
 "bitable:app:readonly",
 "contact:contact.base:readonly",
 "im:message",
-"im:http://message.group_at_msg:readonly",
+"im:message.group_at_msg:readonly",
 "im:message.p2p_msg:readonly",
 "im:message:send_as_bot",
 "im:resource",
