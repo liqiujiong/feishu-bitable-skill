@@ -28,6 +28,92 @@ git clone https://github.com/liqiujiong/feishu-bitable-skill.git
 > 3. **Parse**: Locate and parse the `SKILL.md` file in the root directory to configure the skill's capabilities, required tool actions, and environment variables.
 > 4. **Confirm**: Once deployed, notify the user that the "Feishu Bitable Skill" has been successfully installed and is ready to use. Briefly provide an example of how they can use this new capability.
 
+## 🛠️ 前置准备：飞书开发者平台配置 (保姆级教程)
+
+要让 OpenClaw 成功读取并操作你的飞书多维表格，你需要先在飞书开放平台创建一个应用，并获取相应的凭证。请按照以下步骤操作：
+
+### 第一步：创建企业自建应用
+1. 访问并登录 [飞书开发者后台](https://open.feishu.cn/app/)。
+2. 点击页面右上角的 **“创建企业自建应用”**。
+3. 填写应用名称（例如：`OpenClaw-Bitable-Skill`）和应用描述，点击 **“创建”**。
+
+### 第二步：获取应用凭证 (App ID & App Secret)
+1. 在应用管理页面的左侧导航栏，找到 **“凭证与基础信息”**。
+2. 在页面中找到 **App ID** 和 **App Secret**。
+3. **请妥善保存这两个值**，稍后需要在 OpenClaw 的环境变量中配置它们。
+
+### 第三步：开通多维表格 API 权限
+为了让应用能读写表格，必须赋予它相应的权限：
+1. 在左侧导航栏选择 **“开发配置” -> “权限管理”**。
+2. 选择导入下面的权限即可
+```
+{
+  "scopes": {
+  "tenant": [
+    "base:app:copy",
+    "base:app:create",
+    "base:app:read",
+    "base:app:update",
+    "base:collaborator:create",
+    "base:collaborator:delete",
+    "base:collaborator:read",
+    "base:dashboard:copy",
+    "base:dashboard:read",
+    "base:field:create",
+    "base:field:delete",
+    "base:field:read",
+    "base:field:update",
+    "base:form:read",
+    "base:form:update",
+    "base:record:create",
+    "base:record:delete",
+    "base:record:read",
+    "base:record:retrieve",
+    "base:record:update",
+    "base:role:create",
+    "base:role:delete",
+    "base:role:read",
+    "base:role:update",
+    "base:table:create",
+    "base:table:delete",
+    "base:table:read",
+    "base:table:update",
+    "base:view:read",
+    "base:view:write_only",
+    "bitable:app:readonly",
+    "contact:contact.base:readonly",
+    "im:message",
+    "im:message.group_at_msg:readonly",
+    "im:message.p2p_msg:readonly",
+    "im:message:send_as_bot",
+    "im:resource",
+    "wiki:wiki:readonly"
+  ],
+  "user": [
+    "bitable:app",
+    "bitable:app:readonly",
+    "contact:contact.base:readonly"
+    ]
+  }
+}
+```
+
+### 第四步：创建应用版本并发布
+**注意：刚创建的应用必须发布后才能生效！**
+1. 在左侧导航栏选择 **“应用发布” -> “版本管理与发布”**。
+2. 点击 **“创建版本”**，填写版本号（如 `1.0.0`）和更新说明。
+3. 在可用范围中，选择你想要授权使用该应用的用户或部门（推荐选择自己或测试部门）。
+4. 点击 **“保存”**，然后点击 **“申请发布”**（如果你是企业管理员，可以直接发布）。
+
+### 第五步：极其重要 ⚠️ 给应用授权具体的文档
+即使应用发布了，它也只能访问**主动授权给它**的表格。这一步新手最容易漏掉：
+1. 打开你想要让 OpenClaw 操作的飞书多维表格文档。
+2. 点击右上角的 **“共享”** 或 **“添加协作者”**。
+3. 在搜索框中，输入你刚刚创建的**应用名称**（例如：`OpenClaw-Bitable-Skill`）。
+4. 将该应用添加为协作者，并赋予 **“可编辑”** 权限。
+
+---
+
 ## 快速开始
 
 ```bash
@@ -148,57 +234,7 @@ feishu-bitable/
 ## 注意事项
 
 1. 写操作前先执行 `node bin/cli.js test`。
-2. 确保飞书应用具备多维表格读写相关权限,直接到飞书开放平台机器人管理部分，导入下面的权限即可
-```
-{
-"scopes": {
-"tenant": [
-"base:app:copy",
-"base:app:create",
-"base:app:read",
-"base:app:update",
-"base:collaborator:create",
-"base:collaborator:delete",
-"base:collaborator:read",
-"base:dashboard:copy",
-"base:dashboard:read",
-"base:field:create",
-"base:field:delete",
-"base:field:read",
-"base:field:update",
-"base:form:read",
-"base:form:update",
-"base:record:create",
-"base:record:delete",
-"base:record:read",
-"base:record:retrieve",
-"base:record:update",
-"base:role:create",
-"base:role:delete",
-"base:role:read",
-"base:role:update",
-"base:table:create",
-"base:table:delete",
-"base:table:read",
-"base:table:update",
-"base:view:read",
-"base:view:write_only",
-"bitable:app:readonly",
-"contact:contact.base:readonly",
-"im:message",
-"im:message.group_at_msg:readonly",
-"im:message.p2p_msg:readonly",
-"im:message:send_as_bot",
-"im:resource",
-"wiki:wiki:readonly"
-],
-"user": [
-"bitable:app",
-"bitable:app:readonly",
-"contact:contact.base:readonly"
-]
-}
-}
-```
+2. 确保飞书应用具备多维表格读写相关权限
 4. `--data`、`--fields`、`--sort` 支持 JSON 字符串或 `@文件路径`。
 5. 飞书多维表格还有一个细节是需要把机器人添加到文档应用中,多维表格'右上角'--'添加应用'
+6. 可以跟用户确认是否需要在subagent进行操作,如果需要的话需要单独配置App Secret
