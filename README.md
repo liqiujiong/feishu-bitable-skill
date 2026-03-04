@@ -13,10 +13,10 @@
 
 **方式二：本地命令行安装**
 如果你在本地终端运行 OpenClaw，可以通过以下命令将此技能直接克隆到你的技能工作区：
-\`\`\`bash
+```bash
 cd ~/.openclaw/workspace/skills/
 git clone https://github.com/liqiujiong/feishu-bitable-skill.git
-\`\`\`
+```
 安装完成后，请根据要求配置好飞书相关的环境变量。
 
 ---
