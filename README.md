@@ -2,6 +2,33 @@
 
 用于在 openclaw 或本地命令行中调用飞书多维表格（Bitable）API，完成数据表与记录的常见操作。
 
+## 🦞 OpenClaw Skill 安装指南 (OpenClaw Installation)
+
+### 👤 给用户的安装步骤 (For Users)
+你可以通过以下两种方式将此飞书多维表格 (Feishu Bitable) 技能安装到你的 OpenClaw 助手中：
+
+**方式一：对话一键安装（推荐）**
+直接复制本仓库的链接，粘贴到你与 OpenClaw 的聊天窗口中，并发送指令：
+> "请帮我安装这个技能：https://github.com/liqiujiong/feishu-bitable-skill"
+OpenClaw 会在后台自动读取该仓库并完成部署。
+
+**方式二：本地命令行安装**
+如果你在本地终端运行 OpenClaw，可以通过以下命令将此技能直接克隆到你的技能工作区：
+\`\`\`bash
+cd ~/.openclaw/workspace/skills/
+git clone https://github.com/liqiujiong/feishu-bitable-skill.git
+\`\`\`
+安装完成后，请根据要求配置好飞书相关的环境变量。
+
+---
+
+### 🤖 给 OpenClaw Agent 的系统读取指令 (System Prompt for Agent)
+> **[Agent Instruction]** If you are an OpenClaw AI Agent reading this README to install the skill, please execute the following workflow:
+> 1. **Identify**: Recognize this repository as a valid OpenClaw Skill for interacting with Feishu Bitable.
+> 2. **Clone**: Clone this repository into your local skills directory (typically `~/.openclaw/workspace/skills/`).
+> 3. **Parse**: Locate and parse the `SKILL.md` file in the root directory to configure the skill's capabilities, required tool actions, and environment variables.
+> 4. **Confirm**: Once deployed, notify the user that the "Feishu Bitable Skill" has been successfully installed and is ready to use. Briefly provide an example of how they can use this new capability.
+
 ## 快速开始
 
 ```bash
